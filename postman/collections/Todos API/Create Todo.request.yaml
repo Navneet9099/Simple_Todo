@@ -1,0 +1,36 @@
+$kind: http-request
+name: Create Todo
+order: 2000
+method: POST
+url: '{{baseUrl}}/api/todos'
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Learn Node.js"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 201", function () {
+        pm.response.to.have.status(201);
+      });
+      pm.test("Response has _id, title, and completed", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.have.property('_id');
+        pm.expect(json).to.have.property('title');
+        pm.expect(json).to.have.property('completed');
+      });
+      pm.test("Title matches request body", function () {
+        const json = pm.response.json();
+        pm.expect(json.title).to.eql("Learn Node.js");
+      });
+      pm.test("Completed defaults to false", function () {
+        const json = pm.response.json();
+        pm.expect(json.completed).to.be.false;
+      });
+      pm.collectionVariables.set("todoId", pm.response.json()._id);

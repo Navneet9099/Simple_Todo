@@ -1,0 +1,6 @@
+$kind: collection
+name: Todos API
+description: CRUD operations for the Simple Todo app backend.
+variables:
+  - key: todoId
+    value: ''

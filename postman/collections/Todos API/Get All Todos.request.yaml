@@ -1,0 +1,27 @@
+$kind: http-request
+name: Get All Todos
+order: 1000
+method: GET
+url: '{{baseUrl}}/api/todos'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code is 200", function () {
+        pm.response.to.have.status(200);
+      });
+      pm.test("Response is an array", function () {
+        const json = pm.response.json();
+        pm.expect(json).to.be.an('array');
+      });
+      pm.test("Each todo has _id, title, and completed fields", function () {
+        const json = pm.response.json();
+        json.forEach(function(todo) {
+          pm.expect(todo).to.have.property('_id');
+          pm.expect(todo).to.have.property('title');
+          pm.expect(todo).to.have.property('completed');
+        });
+      });
+      if (pm.response.json().length > 0) {
+        pm.collectionVariables.set("todoId", pm.response.json()[0]._id);
+      }
